@@ -1,0 +1,10 @@
+spring:
+  config:
+    import: file:./additional.yml
+  application:
+    name: SkyOnline-Bot
+
+logging:
+  level:
+    root: info
+
