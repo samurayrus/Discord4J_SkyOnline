@@ -1,0 +1,9 @@
+app:
+  token: TOKEN
+  targetIpPort: 194.61.3.51:25590
+  targetUrl: https://skyrim-multiplayer.herokuapp.com/api/servers
+  prefix: 'Online '
+  voiceChannelId: 885135125141135400
+  schedulerFixedRate: 30_000
+  reasonEditName: 'Refresh Server Online'
+
