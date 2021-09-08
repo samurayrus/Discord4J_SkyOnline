@@ -21,7 +21,7 @@ import java.util.List;
 
 
 @Component
-public class BotMain {
+public class ServerInfoLoaderService {
     private final long voiceChannelId;
     private final String targetIp;
     private final String targetUrl;
@@ -32,12 +32,12 @@ public class BotMain {
     private final GatewayDiscordClient gateway;
 
     @Autowired
-    public BotMain(@Value("${app.voiceChannelId}") final long voiceChannelId,
-                   @Value("${app.token}") final String token,
-                   @Value("${app.targetIpPort}") final String targetIp,
-                   @Value("${app.targetUrl}") final String targetUrl,
-                   @Value("${app.prefix}") final String prefix,
-                   @Value("${app.reasonEditName}") final String reasonEditName) {
+    public ServerInfoLoaderService(@Value("${app.voiceChannelId}") final long voiceChannelId,
+                                   @Value("${app.token}") final String token,
+                                   @Value("${app.targetIpPort}") final String targetIp,
+                                   @Value("${app.targetUrl}") final String targetUrl,
+                                   @Value("${app.prefix}") final String prefix,
+                                   @Value("${app.reasonEditName}") final String reasonEditName) {
         this.voiceChannelId = voiceChannelId;
         this.targetIp = targetIp;
         this.targetUrl = targetUrl;
@@ -47,7 +47,7 @@ public class BotMain {
         this.gateway = DiscordClient.create(token).login().block();
     }
 
-    @Scheduled(fixedRateString = "${app.schedulerFixedRate}")
+    @Scheduled(fixedDelayString = "${app.schedulerFixedDelay}")
     void scheduling() throws Exception {
         final String serverStatsInfo = loadServerStatsInfo();
         System.out.println("new: " + serverStatsInfo);
@@ -77,7 +77,11 @@ public class BotMain {
 
         final HttpUriRequest httpGet = new HttpGet(targetUrl);
         CloseableHttpResponse response = httpclient.execute(httpGet);
+        String responseServerInfoJson = EntityUtils.toString(response.getEntity());
 
-        return EntityUtils.toString(response.getEntity());
+        response.close();
+        httpGet.abort();
+        httpclient.close();
+        return responseServerInfoJson;
     }
 }
