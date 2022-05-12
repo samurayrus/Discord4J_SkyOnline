@@ -27,7 +27,6 @@ public class ServerInfoLoaderService {
     private final String targetUrl;
     private final String prefix;
     private final String reasonEditName;
-    private final ObjectMapper objectMapper;
 
     private final GatewayDiscordClient gateway;
 
@@ -43,7 +42,6 @@ public class ServerInfoLoaderService {
         this.targetUrl = targetUrl;
         this.prefix = prefix;
         this.reasonEditName = reasonEditName;
-        this.objectMapper = new ObjectMapper();
         this.gateway = DiscordClient.create(token).login().block();
     }
 
@@ -55,7 +53,7 @@ public class ServerInfoLoaderService {
         final VoiceChannel voiceChannel =
                 (VoiceChannel) gateway.getChannelById(Snowflake.of(voiceChannelId)).block();
 
-        if (!(voiceChannel != null && voiceChannel.getName().equals(serverStatsInfo)))
+        if (voiceChannel != null && !voiceChannel.getName().equals(serverStatsInfo))
             voiceChannel.edit(voiceChannelEditSpec -> voiceChannelEditSpec.setName(serverStatsInfo).setReason(reasonEditName)).block();
     }
 
@@ -68,7 +66,7 @@ public class ServerInfoLoaderService {
     }
 
     private List<ServerInfo> loadServerInfosMapper() throws Exception {
-        return objectMapper.readValue(loadResponseServerInfosJson(), new TypeReference<List<ServerInfo>>() {
+        return new ObjectMapper().readValue(loadResponseServerInfosJson(), new TypeReference<List<ServerInfo>>() {
         });
     }
 
